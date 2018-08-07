@@ -1,8 +1,5 @@
 module.exports = function(grunt) {
-
-
   grunt.initConfig({
-
     pkg: grunt.file.readJSON('package.json'),
   
     sass: {
@@ -64,7 +61,6 @@ module.exports = function(grunt) {
         tasks: ['sass:dev', 'notify:sass', 'autoprefixer:css' ],
       },
     },
-
   });
 
   grunt.loadNpmTasks('grunt-sass');

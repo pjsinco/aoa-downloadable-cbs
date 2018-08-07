@@ -1,10 +1,10 @@
 {
-  "name": "elit-downloadable",
+  "name": "aoa-downloadable",
   "version": "1.1.1",
   "description": "WordPress plugin for making images and other assets downloadable",
   "main": "Gruntfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "grunt"
   },
   "author": "Patrick Sinco <psinco@gmail.com>",
   "license": "ISC",

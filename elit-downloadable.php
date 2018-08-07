@@ -1,16 +1,12 @@
 <?php 
 /*
-Plugin Name: Elit Downloadable
-Plugin URI:  
+Plugin Name: AOA Downloadable CBS
 Description: Make images and other assets downloadable
-Version:  1.1.1
+Version:  0.1.0
 Author: Patrick Sinco
-Author URI: github.com/pjsinco
-License: GPL2
 */
 
-// if this file is called directly, abort
-if (!defined('WPINC')) {
+if ( ! defined( 'WPINC' ) ) {
   die;
 }
 
@@ -18,7 +14,7 @@ if (!defined('WPINC')) {
 
 // Create shortcode
 
-function elit_downloadable_shortcode_init() {
+function aoa_downloadable_shortcode_init() {
 
   if ( ! shortcode_exists( 'downloadable' ) ) {
     
@@ -28,11 +24,11 @@ function elit_downloadable_shortcode_init() {
      * @param array $atts     The shortcode attributes
      * @return void
      */
-    function elit_downloadable_shortcode( $atts = array() ) {
-
+    function aoa_downloadable_shortcode( $atts = array() ) {
       $atts = array_change_key_case( (array)$atts, CASE_LOWER );
 
-      elit_downloadable_enqueue();
+      wp_enqueue_script('aoa_downloadable_scripts');
+      wp_enqueue_style('aoa_downloadable_styles');
 
       $shortcode_atts = shortcode_atts(
         array(
@@ -51,10 +47,9 @@ function elit_downloadable_shortcode_init() {
         $atts
       );
 
-      $shortcode_atts = elit_format_atts( $shortcode_atts );
+      $shortcode_atts = aoa_format_atts( $shortcode_atts );
 
-      if ( elit_downloadable_is_image( $shortcode_atts ) ) {
-
+      if ( aoa_downloadable_is_image( $shortcode_atts ) ) {
         $ids = array_map( 'trim', explode( ',', $shortcode_atts['ids'] ) );
 
         $shortcode_atts['default_image_id'] = $ids[0];
@@ -70,7 +65,6 @@ function elit_downloadable_shortcode_init() {
             $shortcode_atts['images'][$id]['abs_path'] = get_attached_file( $id );
           }
         }
-
       } else {
         // Handle document
 
@@ -86,18 +80,18 @@ function elit_downloadable_shortcode_init() {
 
 
       $shortcode_atts = 
-        elit_downloadable_get_atts( $shortcode_atts, 
-                                    elit_downloadable_is_image( $shortcode_atts ) );
+        aoa_downloadable_get_atts( $shortcode_atts, 
+                                    aoa_downloadable_is_image( $shortcode_atts ) );
 
       if ( ! $shortcode_atts ) { 
         return;
       }
 
-      $markup = elit_downloadable_markup( $shortcode_atts );
+      $markup = aoa_downloadable_markup( $shortcode_atts );
 
       return $markup;
     }
-    add_shortcode( 'downloadable', 'elit_downloadable_shortcode' );
+    add_shortcode( 'downloadable', 'aoa_downloadable_shortcode' );
 
     /**
      * Return the first values in the array
@@ -105,7 +99,7 @@ function elit_downloadable_shortcode_init() {
      * @param string $ids The ids to parse, eg "785, 786"
      * @return string
      */
-    function elit_downloadable_get_first_id( $ids ) {
+    function aoa_downloadable_get_first_id( $ids ) {
       $all_ids = array_map( 'trim', explode( ',', $ids ) );
       return $all_ids[0];
     }
@@ -116,9 +110,8 @@ function elit_downloadable_shortcode_init() {
      * @param array $atts The shortcode attributes
      * @return boolean Whether the asset is an image
      */
-    function elit_downloadable_is_image( $atts ) {
-
-      $first_id = elit_downloadable_get_first_id( $atts['ids'] );
+    function aoa_downloadable_is_image( $atts ) {
+      $first_id = aoa_downloadable_get_first_id( $atts['ids'] );
 
       return empty( $atts['display_id'] ) || $atts['display_id'] == $first_id;
     }
@@ -129,8 +122,7 @@ function elit_downloadable_shortcode_init() {
      * @param array $atts The shortcode attributes
      * @return array $atts The shortcode attributes with replaced keys
      */
-    function elit_format_atts( $atts ) {
-      
+    function aoa_format_atts( $atts ) {
       return array_combine(
         array_map( function( $key ) use ( $atts ) { 
           return str_replace( '-', '_', $key );
@@ -147,8 +139,7 @@ function elit_downloadable_shortcode_init() {
      * @param  boolean $atts  Whether the downloadable asset is an image
      * @return array   The final shortcode attributes for the downloadable asset
      */
-    function elit_downloadable_get_atts( $atts, $downloadable_is_image = true ) {
-
+    function aoa_downloadable_get_atts( $atts, $downloadable_is_image = true ) {
       if ( ! ( $atts && ! empty( $atts['images'] ) ) ) {
         return false;
       }
@@ -164,11 +155,11 @@ function elit_downloadable_shortcode_init() {
 
         $atts['display_id'] = $default_image_id;
         $atts['filetype']   = 
-          strtoupper( elit_downloadable_get_image_type( $default_image['abs_path'] ) );
+          strtoupper( aoa_downloadable_get_image_type( $default_image['abs_path'] ) );
         //$atts['filesize']   = 
-          //elit_downloadable_human_filesize( filesize( $image_path ), 0 );
+          //aoa_downloadable_human_filesize( filesize( $image_path ), 0 );
         $atts['dimensions'] = 
-          elit_downloadable_format_dimensions($default_image['width'], $default_image['height']);
+          aoa_downloadable_format_dimensions($default_image['width'], $default_image['height']);
         $atts['rel_path']       = parse_url( $image_url, PHP_URL_PATH );
         //$atts['name']       = basename( $image_url );
 
@@ -180,12 +171,11 @@ function elit_downloadable_shortcode_init() {
         $asset_path_parts = explode( '.', basename($asset_path) );
 
         $atts['filetype'] = strtoupper( array_pop( $asset_path_parts ) );
-        //$atts['filesize'] = elit_downloadable_human_filesize( filesize( $asset_path ), 0 );
+        //$atts['filesize'] = aoa_downloadable_human_filesize( filesize( $asset_path ), 0 );
         $atts['rel_path']     = parse_url( $image_url, PHP_URL_PATH );
       }
 
       return $atts;
-      
     }
 
     /**
@@ -195,7 +185,7 @@ function elit_downloadable_shortcode_init() {
      * @param  int $height The width of the asset
      * @return string The height and width formatted for display.
      */
-    function elit_downloadable_format_dimensions( $width, $height ) {
+    function aoa_downloadable_format_dimensions( $width, $height ) {
       if ( empty( $width ) || empty( $height )) {
         return;
       }
@@ -212,8 +202,7 @@ function elit_downloadable_shortcode_init() {
      * @see http://php.net/manual/en/function.filesize.php
      *
      */
-    function elit_downloadable_human_filesize( $bytes, $decimals = 2 ) {
-
+    function aoa_downloadable_human_filesize( $bytes, $decimals = 2 ) {
       $factor = floor( ( strlen( $bytes ) - 1 ) / 3 );
 
       if ( $factor > 0 ) {
@@ -229,7 +218,7 @@ function elit_downloadable_shortcode_init() {
      * @param string $url URL of the image
      * @return string The image type
      */
-    function elit_downloadable_get_image_type( $image_url)  {
+    function aoa_downloadable_get_image_type( $image_url)  {
 
       $image_info = getimagesize( $image_url );
 
@@ -241,34 +230,6 @@ function elit_downloadable_shortcode_init() {
       return null;
     }
 
-    /**
-     * Load the scripts and styles.
-     *
-     * @return void
-     */
-    function elit_downloadable_enqueue() {
-
-      $css_file = 'elit-downloadable.css';
-      $css_path = "public/styles/$css_file";
-      $js_file = 'elit-downloadable-bundle.js';
-      $js_path = "public/scripts/$js_file";
-
-      wp_enqueue_script(
-        'elit_downloadable_scripts',
-        plugins_url( $js_path, __FILE__ ),
-        array( 'jquery' ),
-        filemtime( plugin_dir_path(__FILE__) . "/" . $js_path ),
-        true
-      );
-
-      wp_enqueue_style(
-        'elit_downloadable_styles',
-        plugins_url( $css_path, __FILE__ ),
-        array(),
-        filemtime( plugin_dir_path(__FILE__) . "/" . $css_path ),
-        'all'
-      );
-    }
 
     /**
      * Generate the HTML markup for the downloadable asset.
@@ -276,7 +237,7 @@ function elit_downloadable_shortcode_init() {
      * @param array $atts The shortcode attributes
      * @return string The HTML markup
      */
-    function elit_downloadable_markup( $atts )
+    function aoa_downloadable_markup( $atts )
     {
       extract( $atts );
 
@@ -286,19 +247,14 @@ function elit_downloadable_shortcode_init() {
       $first_id = $all_ids[0];
 
       if ( $first_id != $display_id ) {
-
         // Downloadable is a non-image
         $download_path .= get_attached_file( $ids );
       } else {
-    
         // Downloadable is an image
         $download_path .= get_attached_file( $default_image_id );
       }
 
-      $markup  = "<div class='downloadable' data-elit-downloadable-paths='[" . json_encode( $atts['images'] ) . "]'>";
-      if ( ! empty( $meta_tag ) ):
-        $markup .= "  <h3>$meta_tag</h3>";
-      endif;
+      $markup  = "<div class='downloadable' data-aoa-downloadable-paths='[" . json_encode( $atts['images'] ) . "]'>";
       $markup .= "   <figure>";
       $markup .= "     <a href=\"$download_path\">";
       $markup .= "       <img src='$rel_path'>";
@@ -307,66 +263,70 @@ function elit_downloadable_shortcode_init() {
       $markup .= "         Download</div>";
       $markup .= "       </div>";
       $markup .= "     </a>";
-      $markup .= "   </figure>";
-      $markup .= "   <figcaption>";
+      $markup .= "     <figcaption>";
 
+      if ( ! empty( $meta_tag ) ) {
+        $markup .= "       <div class=\"title\">$meta_tag</div>";
+      } 
 
-      if ( elit_downloadable_is_image( $atts ) ):
-        $markup .= "     <p class='downloadable__note'>";
-        $markup .= "       <a class='hide' id='actualSize' href='$rel_path' target='_blank'>View actual size <i class='downloadable__icon--link'></i><br /></a>";
-        $markup .= "     </p>";
-      endif;
-      $markup .= "     <p class='downloadable__description'>";
-
-
-      if ( count( $images ) > 1 ) {
-
-        $markup .= "       <label for='size'>Select size</label>";
-        $markup .= "       <select name='size' class='downloadable__select'>";
-          
-        foreach ($images as $key => $image) {
-
-          $option_text = 
-            elit_downloadable_format_dimensions( $image['width'], $image['height'] );
-
-          $markup .= "<option value='$key'>$option_text pixels</option>";
-        }
-
-        $markup .= "       </select>";
-
-      } else {
-
-        if ( ! empty( $dimensions ) ) {
-          $markup .= "       <span>Dimensions: </span>$dimensions pixels<br>";
-        }
+      if ( ! empty( $dimensions ) ) {
+        $markup .= "       <div class=\"meta\"><span>Dimensions: </span>$dimensions pixels<br>";
       }
-      $markup .= "       <span class='downloadable__note'><a href='mailto:asnyder@osteopathic.org?subject=" . rawurlencode('OMED Marketing Materials') . "'>Request additional sizes <i class='downloadable__icon--email'></i></a></span>";
 
+      $markup .= "         <div class=\"meta\"><span>Format: </span>$filetype</div>";
 
-
-
-
-
-      $markup .= "       <span>Format: </span>$filetype<br>";
       if ( ! empty( $filesize ) ):
-        $markup .= "       <span>File Size: </span>$filesize<br>";
+        $markup .= "         <div class=\"meta\"><span>File Size: </span>$filesize</div>";
       endif;
+
       if ( ! empty( $meta_link ) ):
-        $markup .= "       <span>Link to: </span>$meta_link<br>";
+        $markup .= "         <div class=\"meta\"><span>Link to: </span>$meta_link</div>";
       endif;
+
       if ( ! empty( $meta_audience ) ):
-        $markup .= "       <span>Audience: </span>$meta_audience<br>";
+        $markup .= "         <div class=\"meta\"><span>Audience: </span>$meta_audience</div>";
       endif;
-      $markup .= "     </p>";
-      $markup .= "     <a href=\"$download_path\">";
-      $markup .= "       <i class='downloadable__icon--dldark'></i>";
-      $markup .= "       Download";
-      $markup .= "     </a>";
-      $markup .= "   </figcaption>";
+
+      $markup .= "       <a href=\"$download_path\">";
+      $markup .= "         <i class='downloadable__icon--dldark'></i>";
+      $markup .= "         Download";
+      $markup .= "       </a>";
+      $markup .= "     </figcaption>";
+      $markup .= "   </figure>";
       $markup .= " </div>";
 
       return $markup;
     }
   }
 }
-add_action( 'init' , 'elit_downloadable_shortcode_init' );
+add_action( 'init' , 'aoa_downloadable_shortcode_init' );
+
+/**
+ * Register the scripts and styles.
+ *
+ * @return void
+ */
+function aoa_downloadable_enqueue() {
+  $css_file = 'aoa-downloadable.css';
+  $css_path = "public/styles/$css_file";
+  $js_file = 'aoa-downloadable-bundle.js';
+  $js_path = "public/scripts/$js_file";
+
+  wp_register_script(
+    'aoa_downloadable_scripts',
+    plugins_url( $js_path, __FILE__ ),
+    array( 'jquery' ),
+    filemtime( plugin_dir_path(__FILE__) . "/" . $js_path ),
+    true
+  );
+
+  wp_register_style(
+    'aoa_downloadable_styles',
+    plugins_url( $css_path, __FILE__ ),
+    array(),
+    filemtime( plugin_dir_path(__FILE__) . "/" . $css_path ),
+    'all'
+  );
+}
+add_action('wp_enqueue_scripts' , 'aoa_downloadable_enqueue');
+

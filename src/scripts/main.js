@@ -1,5 +1,4 @@
 jQuery(window).load(function() {
-
   init();
 
   function init() {
@@ -7,7 +6,7 @@ jQuery(window).load(function() {
 
     jQuery('.downloadable__select').on('change', function(evt) {
       var $downloadable = jQuery(this).closest('.downloadable');
-      var allImages = $downloadable.data('elitDownloadablePaths');
+      var allImages = $downloadable.data('aoaDownloadablePaths');
       var selectedImageId = allImages[0][evt.currentTarget.value];
     
       updateAssetPath($downloadable, selectedImageId.abs_path);
@@ -46,7 +45,6 @@ jQuery(window).load(function() {
    *
    */
   function positionHoverScreen() {
-  
     jQuery('.downloadable').each(function() {
   
       var $image = jQuery(this).find('figure > a > img');
