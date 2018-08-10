@@ -1,4 +1,4 @@
-.downloadable > figcaption > a, .downloadable__screen > div {
+.downloadable .downloadable__figcap > a, .downloadable__screen > div {
   text-transform: uppercase;
   letter-spacing: 1px; }
 
@@ -8,14 +8,19 @@
   height: 13px;
   width: 13px;
   margin-right: .5rem;
+  margin-top: 0;
   background-size: 13px; }
 
 .downloadable__icon--dldark, .downloadable__icon--dllight, .downloadable__icon--link, .downloadable__icon--email {
   display: inline-block;
+  padding: 0;
+  right: auto;
+  left: auto;
+  bottom: auto;
   background-repeat: no-repeat;
   background-position: 50%;
-  -webkit-transform: translate3d(0, 0, 0);
-          transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0) !important;
+          transform: translate3d(0, 0, 0) !important;
   transition: -webkit-transform .3s ease;
   transition: transform .3s ease; }
 
@@ -23,21 +28,26 @@
   position: relative;
   display: block;
   max-width: 100%;
-  margin-bottom: 2rem; }
+  margin: 1rem; }
   .downloadable a {
     text-decoration: none;
     color: inherit; }
-  .downloadable figure {
+  .downloadable .downloadable__fig {
     position: relative;
-    width: auto !important;
-    margin: 0 !important;
+    width: auto;
+    margin: 0;
     padding: 0;
-    text-align: inherit !important; }
-    .downloadable figure > a {
+    text-align: inherit; }
+    .downloadable .downloadable__fig > a {
       display: block; }
-    .downloadable figure:hover {
+    .downloadable .downloadable__fig > a:hover {
+      opacity: 1; }
+    .downloadable .downloadable__fig:hover {
       cursor: pointer; }
-  .downloadable img {
+  .downloadable i:before,
+  .downloadable i:after {
+    content: none !important; }
+  .downloadable .downloadable__img {
     margin: 0;
     position: relative;
     display: block;
@@ -45,34 +55,14 @@
     height: auto !important;
     max-width: 100% !important;
     box-shadow: 0 0 10px 3px #f3f3f3; }
-  .downloadable > h3 {
+  .downloadable .downloadable__figcap {
     position: relative;
-    left: 1rem;
-    display: inline-block;
-    height: 32px;
-    margin-bottom: 0;
-    padding: .5rem 1rem;
-    font-family: "gotham-book", Helvetica, Arial, sans-serif;
-    font-size: .75rem;
-    line-height: 1.4;
-    letter-spacing: .8px;
-    text-transform: uppercase;
-    color: #666;
-    background-color: #f5f5f5;
-    border-radius: 8px 8px 0 0;
-    border-top: 1px solid #ececec;
-    border-left: 1px solid #ececec;
-    border-right: 1px solid #ececec;
-    border-bottom: none; }
-  .downloadable > figcaption {
-    position: relative;
-    padding: 0 1rem 1rem;
-    /*box-shadow: 0 0 10px 3px #f3f3f3;*/
+    padding: 10px 1rem 1rem;
     border-left: 1px solid #ececec;
     border-right: 1px solid #ececec;
     border-bottom: 1px solid #ececec;
     border-top: none; }
-    .downloadable > figcaption > a {
+    .downloadable .downloadable__figcap > a {
       position: relative;
       display: block;
       margin: 0 -1rem -1rem;
@@ -80,10 +70,11 @@
       text-align: center;
       font-weight: 200;
       letter-spacing: .4px;
-      color: #666;
+      color: #2a2a2a;
+      font-family: proxima_nova_rgregular, sans-serif;
       background-color: #f5f5f5;
       transition: background-color .3s ease; }
-    .downloadable > figcaption > a:hover {
+    .downloadable .downloadable__figcap > a:hover {
       background-color: #e6e6e6;
       cursor: pointer; }
   .downloadable select {
@@ -106,6 +97,21 @@
     -moz-appearance: none; }
     .downloadable select:focus {
       outline: 0; }
+  .downloadable .meta {
+    word-wrap: break-word;
+    word-break: break-word;
+    font-size: .875rem; }
+    .downloadable .meta:last-of-type {
+      margin-bottom: 1rem; }
+    .downloadable .meta span {
+      text-transform: uppercase;
+      font-size: .6667rem;
+      letter-spacing: 1px; }
+  .downloadable .title {
+    margin-bottom: 4px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px; }
 
 .downloadable__description {
   margin-top: 0;
@@ -144,24 +150,14 @@
     opacity: .8; }
 
 .downloadable__screen {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-justify-content: center;
-      -ms-flex-pack: center;
-          justify-content: center;
   position: absolute;
-  top: 1rem;
-  bottom: 1rem;
-  left: 1rem;
-  right: 1rem;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: rgba(68, 68, 68, 0.93);
   opacity: 0;
   transition: opacity .3s ease;
-  /*font-size: 24px;*/
   font-size: 1rem;
   font-weight: 200;
   letter-spacing: .8px;
@@ -175,18 +171,18 @@
             transform: translate3d(0, -100%, 0);
     transition: -webkit-transform .3s ease, opacity .3s ease;
     transition: transform .3s ease, opacity .3s ease; }
-    .downloadable > figure > a:hover .downloadable__screen > div {
+    .downloadable > .downloadable__fig > a:hover .downloadable__screen > div {
       opacity: 1;
       -webkit-transform: none;
               transform: none; }
-  .downloadable > figure > a:hover .downloadable__screen {
+  .downloadable > .downloadable__fig > a:hover .downloadable__screen {
     opacity: 1; }
 
 .downloadable__icon--dldark {
   background-image: url(./../images/download-dark.png); }
-  .downloadable > figcaption > a:hover .downloadable__icon--dldark {
-    -webkit-transform: translate3d(0, 12%, 0);
-            transform: translate3d(0, 12%, 0); }
+  .downloadable .downloadable__figcap > a:hover .downloadable__icon--dldark {
+    -webkit-transform: translate3d(0, 12%, 0) !important;
+            transform: translate3d(0, 12%, 0) !important; }
 
 .downloadable__icon--dllight {
   background-image: url(./../images/download-light.png); }
@@ -213,9 +209,9 @@
   -webkit-flex-direction: row;
       -ms-flex-direction: row;
           flex-direction: row;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
   -webkit-justify-content: center;
       -ms-flex-pack: center;
           justify-content: center; }

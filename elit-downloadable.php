@@ -34,14 +34,9 @@ function aoa_downloadable_shortcode_init() {
         array(
           'ids' => '',
           'display-id' => '',
-          //'rel-path' => '',
-          //'name' => '',
           'meta-tag' => '',
           'meta-link' => '',
           'meta-audience' => '',
-          //'filetype' => '',
-          //'dimensions' => '',
-          //'filesize' => '',
           'images' => array(),
         ),
         $atts
@@ -254,23 +249,31 @@ function aoa_downloadable_shortcode_init() {
         $download_path .= get_attached_file( $default_image_id );
       }
 
-      $markup  = "<div class='downloadable' data-aoa-downloadable-paths='[" . json_encode( $atts['images'] ) . "]'>";
-      $markup .= "   <figure>";
+      $markup  = "<div class='downloadable' data-aoa-downloadable-paths='[" . json_encode( $atts['images'] ) . "]'";
+
+      if ( ! empty( $dimensions ) ) {
+        $max_width = explode('x', $dimensions)[0];
+        $markup .= 'style="max-width: ' . $max_width . 'px">';
+      } else {
+        $markup .= '>';
+      }
+      
+      $markup .= "   <div class=\"downloadable__fig\">";
       $markup .= "     <a href=\"$download_path\">";
-      $markup .= "       <img src='$rel_path'>";
+      $markup .= "       <img class=\"downloadable__img\" src='$rel_path'>";
       $markup .= "       <div class='downloadable__screen' >";
       $markup .= "         <div><i class='downloadable__icon--dllight'></i>";
       $markup .= "         Download</div>";
       $markup .= "       </div>";
       $markup .= "     </a>";
-      $markup .= "     <figcaption>";
+      $markup .= "     <div class=\"downloadable__figcap\">";
 
       if ( ! empty( $meta_tag ) ) {
         $markup .= "       <div class=\"title\">$meta_tag</div>";
       } 
 
       if ( ! empty( $dimensions ) ) {
-        $markup .= "       <div class=\"meta\"><span>Dimensions: </span>$dimensions pixels<br>";
+        $markup .= "       <div class=\"meta\"><span>Dimensions: </span>$dimensions pixels</div>";
       }
 
       $markup .= "         <div class=\"meta\"><span>Format: </span>$filetype</div>";
@@ -291,8 +294,8 @@ function aoa_downloadable_shortcode_init() {
       $markup .= "         <i class='downloadable__icon--dldark'></i>";
       $markup .= "         Download";
       $markup .= "       </a>";
-      $markup .= "     </figcaption>";
-      $markup .= "   </figure>";
+      $markup .= "     </div>";
+      $markup .= "   </div>";
       $markup .= " </div>";
 
       return $markup;

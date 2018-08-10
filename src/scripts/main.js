@@ -23,11 +23,11 @@ jQuery(window).load(function() {
   function updateAssetPath($downloadable, assetPath) {
     var assetString = '?asset=';
 
-    var $anchorTag = $downloadable.find('figure > a');
+    var $anchorTag = $downloadable.find('.downloadable__fig > a');
     var hrefPath = $anchorTag.attr('href').split(assetString)[0];
     var newPath = hrefPath + assetString + assetPath;
     $anchorTag.attr('href', newPath);
-    $downloadable.find('figcaption > a').first().attr('href', newPath);
+    $downloadable.find('.downloadable__figcap > a').first().attr('href', newPath);
   }
   
   /**
@@ -47,7 +47,7 @@ jQuery(window).load(function() {
   function positionHoverScreen() {
     jQuery('.downloadable').each(function() {
   
-      var $image = jQuery(this).find('figure > a > img');
+      var $image = jQuery(this).find('.downloadable__fig > a > img');
 
       jQuery(this).find('.downloadable__screen').css({
         width:  $image.css('width'),
