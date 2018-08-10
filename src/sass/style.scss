@@ -8,21 +8,21 @@ $fontcolor: #666;
 }
 
 %downloadable-icon-dl-base {
-  position: relative;
-  top: 1px;
+  position: relative !important;
+  top: 1px !important;
   height: 13px;
   width: 13px;
   margin-right: .5rem;
-  margin-top: 0;
+  margin-top: 0 !important;
   background-size: 13px;
 }
 
 %downloadable-icon-base {
   display: inline-block;
   padding: 0;
-  right: auto;
-  left: auto;
-  bottom: auto;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
   background-repeat: no-repeat;
   background-position: 50%;
   transform: translate3d(0, 0, 0) !important;
@@ -209,6 +209,9 @@ $fontcolor: #666;
   bottom: 0;
   left: 0;
   right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: rgba(68,68,68,.93);
   opacity: 0;
   transition: opacity .3s ease;

@@ -3,20 +3,20 @@
   letter-spacing: 1px; }
 
 .downloadable__icon--dldark, .downloadable__icon--dllight {
-  position: relative;
-  top: 1px;
+  position: relative !important;
+  top: 1px !important;
   height: 13px;
   width: 13px;
   margin-right: .5rem;
-  margin-top: 0;
+  margin-top: 0 !important;
   background-size: 13px; }
 
 .downloadable__icon--dldark, .downloadable__icon--dllight, .downloadable__icon--link, .downloadable__icon--email {
   display: inline-block;
   padding: 0;
-  right: auto;
-  left: auto;
-  bottom: auto;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
   background-repeat: no-repeat;
   background-position: 50%;
   -webkit-transform: translate3d(0, 0, 0) !important;
@@ -155,6 +155,15 @@
   bottom: 0;
   left: 0;
   right: 0;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   background-color: rgba(68, 68, 68, 0.93);
   opacity: 0;
   transition: opacity .3s ease;
