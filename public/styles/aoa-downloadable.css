@@ -100,7 +100,8 @@
   .downloadable .meta {
     word-wrap: break-word;
     word-break: break-word;
-    font-size: .875rem; }
+    font-size: .875rem;
+    line-height: 1.6; }
     .downloadable .meta:last-of-type {
       margin-bottom: 1rem; }
     .downloadable .meta span {
