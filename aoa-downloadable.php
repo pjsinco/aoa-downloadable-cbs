@@ -15,9 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 // Create shortcode
 
 function aoa_downloadable_shortcode_init() {
-
   if ( ! shortcode_exists( 'downloadable' ) ) {
-    
     /**
      * Create the shortcode.
      *
@@ -32,7 +30,7 @@ function aoa_downloadable_shortcode_init() {
 
       $shortcode_atts = shortcode_atts(
         array(
-          'ids' => '',
+          'id' => '',
           'display-id' => '',
           'meta-tag' => '',
           'meta-link' => '',
@@ -43,28 +41,21 @@ function aoa_downloadable_shortcode_init() {
       );
 
       $shortcode_atts = aoa_format_atts( $shortcode_atts );
+      $id = trim($shortcode_atts['id']);
 
-      if ( aoa_downloadable_is_image( $shortcode_atts ) ) {
-        $ids = array_map( 'trim', explode( ',', $shortcode_atts['ids'] ) );
+      if ( aoa_downloadable_is_image( $shortcode_atts, $id ) ) {
+        $shortcode_atts['default_image_id'] = $id;
 
-        $shortcode_atts['default_image_id'] = $ids[0];
-
-        foreach ($ids as $id) {
-
-          $image = wp_get_attachment_image_src( $id, 'full' );
-          
-          if ( $image ) {
-            $shortcode_atts['images'][$id]['url'] = $image[0];
-            $shortcode_atts['images'][$id]['width'] = $image[1];
-            $shortcode_atts['images'][$id]['height'] = $image[2];
-            $shortcode_atts['images'][$id]['abs_path'] = get_attached_file( $id );
-          }
+        $image = wp_get_attachment_image_src( $id, 'full' );
+        
+        if ( $image ) {
+          $shortcode_atts['images'][$id]['url'] = $image[0];
+          $shortcode_atts['images'][$id]['width'] = $image[1];
+          $shortcode_atts['images'][$id]['height'] = $image[2];
+          $shortcode_atts['images'][$id]['abs_path'] = get_attached_file( $id );
         }
       } else {
         // Handle document
-
-        $id = reset($shortcode_atts['ids']);
-
         $image = wp_get_attachment_image_src( $shortcode_atts['display_id'], 'full' );
 
         $shortcode_atts['images'][0]['url'] = $image[0];
@@ -72,7 +63,6 @@ function aoa_downloadable_shortcode_init() {
         $shortcode_atts['images'][0]['height'] = $image[2];
         $shortcode_atts['images'][0]['abs_path'] = get_attached_file( $id );
       }
-
 
       $shortcode_atts = 
         aoa_downloadable_get_atts( $shortcode_atts, 
@@ -89,26 +79,15 @@ function aoa_downloadable_shortcode_init() {
     add_shortcode( 'downloadable', 'aoa_downloadable_shortcode' );
 
     /**
-     * Return the first values in the array
-     * 
-     * @param string $ids The ids to parse, eg "785, 786"
-     * @return string
-     */
-    function aoa_downloadable_get_first_id( $ids ) {
-      $all_ids = array_map( 'trim', explode( ',', $ids ) );
-      return $all_ids[0];
-    }
-
-    /**
      * Determines whether the requested asset is an image.
      *
      * @param array $atts The shortcode attributes
      * @return boolean Whether the asset is an image
      */
     function aoa_downloadable_is_image( $atts ) {
-      $first_id = aoa_downloadable_get_first_id( $atts['ids'] );
+      $id = $atts['id'];
 
-      return empty( $atts['display_id'] ) || $atts['display_id'] == $first_id;
+      return empty( $atts['display_id'] ) || $atts['display_id'] == $id;
     }
 
     /**
@@ -140,29 +119,22 @@ function aoa_downloadable_shortcode_init() {
       }
 
       $default_image = reset( $atts['images'] );
-      $default_image_id = $atts['default_image_id'];
+      $default_image_id = ! empty( $atts['default_image_id'] ) ?: $atts['id'];
 
       $image_url = $default_image['url'];
       
       if ( $downloadable_is_image ) {
-
-        //$image_path = get_attached_file( $default_image_id );
-
         $atts['display_id'] = $default_image_id;
         $atts['filetype']   = 
           strtoupper( aoa_downloadable_get_image_type( $default_image['abs_path'] ) );
-        //$atts['filesize']   = 
-          //aoa_downloadable_human_filesize( filesize( $image_path ), 0 );
         $atts['dimensions'] = 
           aoa_downloadable_format_dimensions($default_image['width'], $default_image['height']);
         $atts['rel_path']       = parse_url( $image_url, PHP_URL_PATH );
-        //$atts['name']       = basename( $image_url );
 
       } else {
-
         $image_path = get_attached_file( $atts['display_id'] );
 
-        $asset_path = get_attached_file( $atts['ids'] );
+        $asset_path = get_attached_file( $atts['id'] );
         $asset_path_parts = explode( '.', basename($asset_path) );
 
         $atts['filetype'] = strtoupper( array_pop( $asset_path_parts ) );
@@ -232,18 +204,14 @@ function aoa_downloadable_shortcode_init() {
      * @param array $atts The shortcode attributes
      * @return string The HTML markup
      */
-    function aoa_downloadable_markup( $atts )
-    {
+    function aoa_downloadable_markup( $atts ) {
       extract( $atts );
 
       $download_path = plugins_url( "download.php", __FILE__ ) .  '?asset=';
 
-      $all_ids = array_map( 'trim', explode( ',', $ids ) );
-      $first_id = $all_ids[0];
-
-      if ( $first_id != $display_id ) {
+      if ( $id != $display_id ) {
         // Downloadable is a non-image
-        $download_path .= get_attached_file( $ids );
+        $download_path .= get_attached_file( $id );
       } else {
         // Downloadable is an image
         $download_path .= get_attached_file( $default_image_id );
@@ -332,4 +300,3 @@ function aoa_downloadable_enqueue() {
   );
 }
 add_action('wp_enqueue_scripts' , 'aoa_downloadable_enqueue');
-
